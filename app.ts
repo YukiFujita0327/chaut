@@ -19,7 +19,9 @@ io.on("connection", (socket: any) => {
     }
     redis.xadd('chaut', '*','message', 'hogehogehooge')
     const respons = await redis.xread('COUNT', 100, 'STREAMS', 'chaut', 0)
-    console.log(respons)
+    if(respons) {
+      console.log(respons[0][1])
+    }
     // const result = redis.get('hoge')
     // result.then((res: any) => {
     //   console.log('redus_result: ',res)
