@@ -18,7 +18,7 @@ io.on("connection", (socket: any) => {
       msg.userName = "No Name"
     }
     redis.xadd('chaut', '*','message', 'hogehogehooge')
-    const respons = await redis.xread('COUNT', 100, 'BLOCK', '5000', 'STREAMS', 'chaut', '$')
+    const respons = await redis.xread('COUNT', 100, 'STREAMS', 'chaut', 0)
     console.log(respons)
     // const result = redis.get('hoge')
     // result.then((res: any) => {
