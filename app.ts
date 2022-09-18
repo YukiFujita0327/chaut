@@ -1,24 +1,29 @@
+import type {Redis} from 'ioredis';
 const express = require("express")
 const app = express()
 const port = process.env.PORT || 5000
 const http = require("http").Server(app)
 const io = require("socket.io")(http)
-const moment = require('moment');
-const Redis = require('ioredis');
+const IoRedis = require('ioredis');
 const redis_address = process.env.REDIS_ADDRESS || 'redis://chaut-cluster.galiun.ng.0001.apne1.cache.amazonaws.com';
-const redis = new Redis(redis_address);
+const redis:Redis = new IoRedis(redis_address);
 
 app.get("/", (req: any, res: any) => {
   res.sendFile(__dirname + "/index.html")
 })
 
 io.on("connection", (socket: any) => {
-  socket.on("chat message", (msg: { userName: string; comment: string }) => {
+  socket.on("chat message", async (msg: { userName: string; comment: string }) => {
     if (msg.userName === "") {
       msg.userName = "No Name"
     }
-    const result = redis.get('hoge')
-    console.log('redis_result: ',result);
+    redis.xadd('chaut', '*','message', 'hogehogehooge')
+    const respons = await redis.xread('COUNT', 100, 'BLOCK', '5000', 'STREAMS', 'chaut', '$')
+    console.log(respons)
+    // const result = redis.get('hoge')
+    // result.then((res: any) => {
+    //   console.log('redus_result: ',res)
+    // })
     io.emit("chat message", msg)
   })
 })
